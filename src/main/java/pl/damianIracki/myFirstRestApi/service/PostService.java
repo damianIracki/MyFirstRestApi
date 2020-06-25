@@ -4,12 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import pl.damianIracki.myFirstRestApi.contoller.dto.PostDto;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import pl.damianIracki.myFirstRestApi.model.Comment;
 import pl.damianIracki.myFirstRestApi.model.Post;
 import pl.damianIracki.myFirstRestApi.repository.CommentRepository;
 import pl.damianIracki.myFirstRestApi.repository.PostRepository;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,5 +54,22 @@ public class PostService {
         return comments.stream()
                 .filter(comment -> comment.getPostId() == id)
                 .collect(Collectors.toList());
+    }
+
+    public Post addPost(Post post) {
+        return postRepository.save(post);
+    }
+
+    @Transactional
+    public Post editPost(Post post) {
+        Post postEdited = postRepository.findById(post.getId()).orElseThrow();
+        postEdited.setTitle(post.getTitle());
+        postEdited.setContent(post.getContent());
+        return postEdited;
+    }
+
+
+    public void deletePost(long id) {
+        postRepository.deleteById(id);
     }
 }
